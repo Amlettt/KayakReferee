@@ -1,6 +1,8 @@
 # qt6-tools designer запустить QT дизайнер
 import sys
+from functools import partial
 import pandas as pd
+
 from design import Ui_MainWindow
 
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
@@ -44,12 +46,12 @@ class MainWindow(QMainWindow):
         actionAbout = self.ui.actionAbout
 
         # Menu btn actions
-        actionNew.triggered.connect(self.new_file(tableSportsmen))
+        actionNew.triggered.connect(partial(self.new_file, tableSportsmen)) # Используем functools.partial для передачи аргумента в функцию
         actionOpen.triggered.connect(self.open_file)
         actionSave.triggered.connect(self.save_file)
         actionSaveAs.triggered.connect(self.save_as_file)
-        actionAdd.triggered.connect(self.add_empty_row(tableSportsmen))
-        actionDel.triggered.connect(self.delete_row(tableSportsmen))
+        actionAdd.triggered.connect(partial(self.add_empty_row, tableSportsmen)) # Используем functools.partial для передачи аргумента в функцию
+        actionDel.triggered.connect(partial(self.delete_row, tableSportsmen)) # Используем functools.partial для передачи аргумента в функцию
 
         actionCheckPoint.triggered.connect(self.helpWindow)
         actionFinish.triggered.connect(self.helpWindow)
