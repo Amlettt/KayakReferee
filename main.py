@@ -17,7 +17,7 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
 
 from PySide6.QtWidgets import (QApplication, QHeaderView, QMainWindow, QMenu,
                                QMenuBar, QSizePolicy, QStatusBar, QTabWidget,
-                               QTableWidget, QTableWidgetItem, QWidget, QMessageBox, QFileDialog)
+                               QTableWidget, QTableWidgetItem, QWidget, QMessageBox, QFileDialog, QLabel, QVBoxLayout)
 
 
 # Создаем главное окно
@@ -30,6 +30,7 @@ class MainWindow(QMainWindow):
 
         # table sportsmen
         tableSportsmen = self.ui.tableSportsmen
+        LOG = QVBoxLayout(self.ui.scrollAreaLog)
 
         # Menu options
         actionNew = self.ui.actionNew
@@ -46,12 +47,12 @@ class MainWindow(QMainWindow):
         actionAbout = self.ui.actionAbout
 
         # Menu btn actions
-        actionNew.triggered.connect(partial(self.new_file, tableSportsmen)) # Используем functools.partial для передачи аргумента в функцию
-        actionOpen.triggered.connect(self.open_file)
+        actionNew.triggered.connect(partial(self.new_file, tableSportsmen, LOG)) # Используем functools.partial для передачи аргумента в функцию
+        actionOpen.triggered.connect(partial(self.open_file, tableSportsmen, LOG)) # Используем functools.partial для передачи аргумента в функцию
         actionSave.triggered.connect(self.save_file)
         actionSaveAs.triggered.connect(self.save_as_file)
-        actionAdd.triggered.connect(partial(self.add_empty_row, tableSportsmen)) # Используем functools.partial для передачи аргумента в функцию
-        actionDel.triggered.connect(partial(self.delete_row, tableSportsmen)) # Используем functools.partial для передачи аргумента в функцию
+        actionAdd.triggered.connect(partial(self.add_empty_row, tableSportsmen, LOG)) # Используем functools.partial для передачи аргумента в функцию
+        actionDel.triggered.connect(partial(self.delete_row, tableSportsmen, LOG)) # Используем functools.partial для передачи аргумента в функцию
 
         actionCheckPoint.triggered.connect(self.helpWindow)
         actionFinish.triggered.connect(self.helpWindow)
@@ -61,7 +62,27 @@ class MainWindow(QMainWindow):
 
         actionAbout.triggered.connect(self.helpWindow)
 
-    def new_file(self, tableSportsmen):
+    def add_log_entry(self, text, color):
+        # Создаем QLabel для строки
+        label = QLabel()
+
+        # Создаем объект QDateTime для текущей даты и времени
+        current_datetime = QDateTime.currentDateTime()
+
+        # Форматируем текст с текущей датой и временем
+        formatted_text = f"{current_datetime.toString('dd.MM.yyyy hh:mm:ss')} - {text}"
+
+        # Устанавливаем текст и цвет для QLabel
+        label.setText(formatted_text)
+        label.setStyleSheet(f"color: {color.name()};")
+
+        return label
+
+
+    def new_file(self, tableSportsmen, LOG):
+        pass
+
+    def open_file(self, tableSportsmen, LOG):
         options = QFileDialog.Options()
         file_name, _ = QFileDialog.getOpenFileName(self, "Открыть файл CSV", "", "CSV Files (*.csv);;All Files (*)",
                                                    options=options)
@@ -96,32 +117,35 @@ class MainWindow(QMainWindow):
 
                 # Настройка размеров столбцов по содержимому
                 tableSportsmen.resizeColumnsToContents()
+                # Добавляем QLabel в layout
+                LOG.addWidget(self.add_log_entry(f"Открытие файла {file_name}", QColor(Qt.black)))
+
 
             except Exception as e:
                 QMessageBox.about(self, "Ошибка",
                                   "Ошибка при чтении файла: {str(e)}")
 
-                print(f"Ошибка при чтении файла: {str(e)}")
+                print(f"Ошибка при чтении файла {file_name}: {str(e)}")
+                LOG.addWidget(self.add_log_entry(f"Ошибка при чтении файла {file_name}: {str(e)}", QColor(Qt.red)))
 
-    def open_file(self):
+    def save_file(self, LOG):
         pass
 
-    def save_file(self):
-        pass
-
-    def save_as_file(self):
+    def save_as_file(self, LOG):
         pass
 
     # Добавить новую строку
-    def add_empty_row(self, tableSportsmen):
+    def add_empty_row(self, tableSportsmen, LOG):
         num_rows = tableSportsmen.rowCount()
         tableSportsmen.insertRow(num_rows)
+        LOG.addWidget(self.add_log_entry(f"Добавлена пустая строка", QColor(Qt.black)))
 
     # Удалить выделенною строку
-    def delete_row(self, tableSportsmen):
+    def delete_row(self, tableSportsmen, LOG):
         selected_row = tableSportsmen.currentRow()
         if selected_row >= 0:
             tableSportsmen.removeRow(selected_row)
+        LOG.addWidget(self.add_log_entry(f"Удалена строка {selected_row}", QColor(Qt.black)))
 
     # Открыть окно помощи "О программе"
     def helpWindow(self):
