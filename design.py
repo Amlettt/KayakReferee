@@ -7,8 +7,8 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
 from PySide6.QtWidgets import (QApplication, QHeaderView, QMainWindow, QMenu,
-    QMenuBar, QSizePolicy, QStatusBar, QTabWidget,
-    QTableWidget, QTableWidgetItem, QWidget)
+    QMenuBar, QScrollArea, QSizePolicy, QStatusBar,
+    QTabWidget, QTableWidget, QTableWidgetItem, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -59,6 +59,18 @@ class Ui_MainWindow(object):
         self.tableResult.setObjectName(u"tableResult")
         self.tableResult.setGeometry(QRect(0, 0, 1001, 631))
         self.tabWidget.addTab(self.tabResult, "")
+        self.tabLog = QWidget()
+        self.tabLog.setObjectName(u"tabLog")
+        self.scrollArea = QScrollArea(self.tabLog)
+        self.scrollArea.setObjectName(u"scrollArea")
+        self.scrollArea.setGeometry(QRect(-1, -1, 1001, 631))
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollAreaLog = QWidget()
+        self.scrollAreaLog.setObjectName(u"scrollAreaLog")
+        self.scrollAreaLog.setGeometry(QRect(0, 0, 999, 629))
+        self.scrollAreaLog.setStyleSheet(u"background-color: rgb(255, 255, 255);")
+        self.scrollArea.setWidget(self.scrollAreaLog)
+        self.tabWidget.addTab(self.tabLog, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -102,7 +114,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -191,6 +203,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabSportsmen), QCoreApplication.translate("MainWindow", u"\u0423\u0447\u0430\u0441\u0442\u043d\u0438\u043a\u0438", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabDistance), QCoreApplication.translate("MainWindow", u"\u0414\u0438\u0441\u0442\u0430\u043d\u0446\u0438\u0438", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabResult), QCoreApplication.translate("MainWindow", u"\u0420\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u044b", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabLog), QCoreApplication.translate("MainWindow", u"\u041b\u043e\u0433\u0438", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"\u0424\u0430\u0439\u043b", None))
         self.menuOnline.setTitle(QCoreApplication.translate("MainWindow", u"\u041e\u043d\u043b\u0430\u0439\u043d", None))
         self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", u"\u0420\u0435\u0434\u0430\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435", None))
