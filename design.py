@@ -7,8 +7,8 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
 from PySide6.QtWidgets import (QApplication, QHeaderView, QMainWindow, QMenu,
-    QMenuBar, QScrollArea, QSizePolicy, QStatusBar,
-    QTabWidget, QTableWidget, QTableWidgetItem, QWidget)
+    QMenuBar, QSizePolicy, QStatusBar, QTabWidget,
+    QTableWidget, QTableWidgetItem, QTextEdit, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -61,15 +61,10 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.tabResult, "")
         self.tabLog = QWidget()
         self.tabLog.setObjectName(u"tabLog")
-        self.scrollArea = QScrollArea(self.tabLog)
-        self.scrollArea.setObjectName(u"scrollArea")
-        self.scrollArea.setGeometry(QRect(-1, -1, 1001, 631))
-        self.scrollArea.setWidgetResizable(True)
-        self.scrollAreaLog = QWidget()
-        self.scrollAreaLog.setObjectName(u"scrollAreaLog")
-        self.scrollAreaLog.setGeometry(QRect(0, 0, 999, 629))
-        self.scrollAreaLog.setStyleSheet(u"background-color: rgb(255, 255, 255);")
-        self.scrollArea.setWidget(self.scrollAreaLog)
+        self.textEditLog = QTextEdit(self.tabLog)
+        self.textEditLog.setObjectName(u"textEditLog")
+        self.textEditLog.setGeometry(QRect(0, 0, 1001, 631))
+        self.textEditLog.setReadOnly(True)
         self.tabWidget.addTab(self.tabLog, "")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
@@ -114,7 +109,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)

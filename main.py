@@ -13,7 +13,7 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
                            QCursor, QFont, QFontDatabase, QGradient,
                            QIcon, QImage, QKeySequence, QLinearGradient,
                            QPainter, QPalette, QPixmap, QRadialGradient,
-                           QTransform)
+                           QTransform, QTextCharFormat)
 
 from PySide6.QtWidgets import (QApplication, QHeaderView, QMainWindow, QMenu,
                                QMenuBar, QSizePolicy, QStatusBar, QTabWidget,
@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
 
         # table sportsmen
         tableSportsmen = self.ui.tableSportsmen
-        LOG = QVBoxLayout(self.ui.scrollAreaLog)
+        LOG = self.ui.textEditLog
 
         # Menu options
         actionNew = self.ui.actionNew
@@ -62,21 +62,21 @@ class MainWindow(QMainWindow):
 
         actionAbout.triggered.connect(self.helpWindow)
 
-    def add_log_entry(self, text, color):
-        # Создаем QLabel для строки
-        label = QLabel()
-
+    def add_log_entry(self, text, color, LOG):
+        cursor = LOG.textCursor()
+        # Создаем объект формата текста и устанавливаем красный цвет
+        char_format = QTextCharFormat()
+        char_format.setForeground(color)
+        # Применяем формат к текущему курсору
+        cursor.setCharFormat(char_format)
         # Создаем объект QDateTime для текущей даты и времени
         current_datetime = QDateTime.currentDateTime()
-
         # Форматируем текст с текущей датой и временем
         formatted_text = f"{current_datetime.toString('dd.MM.yyyy hh:mm:ss')} - {text}"
-
-        # Устанавливаем текст и цвет для QLabel
-        label.setText(formatted_text)
-        label.setStyleSheet(f"color: {color.name()};")
-
-        return label
+        # Вставляем текст с красным форматированием
+        cursor.insertText(formatted_text)
+        # Переходим на новую строку
+        cursor.insertBlock()
 
 
     def new_file(self, tableSportsmen, LOG):
@@ -117,8 +117,8 @@ class MainWindow(QMainWindow):
 
                 # Настройка размеров столбцов по содержимому
                 tableSportsmen.resizeColumnsToContents()
-                # Добавляем QLabel в layout
-                LOG.addWidget(self.add_log_entry(f"Открытие файла {file_name}", QColor(Qt.black)))
+                # Добавляем LOG
+                self.add_log_entry(f"Открытие файла {file_name}", QColor(Qt.black), LOG)
 
 
             except Exception as e:
@@ -126,7 +126,7 @@ class MainWindow(QMainWindow):
                                   "Ошибка при чтении файла: {str(e)}")
 
                 print(f"Ошибка при чтении файла {file_name}: {str(e)}")
-                LOG.addWidget(self.add_log_entry(f"Ошибка при чтении файла {file_name}: {str(e)}", QColor(Qt.red)))
+                self.add_log_entry(f"Ошибка при чтении файла {file_name}: {str(e)}", QColor(Qt.red), LOG)
 
     def save_file(self, LOG):
         pass
@@ -138,14 +138,14 @@ class MainWindow(QMainWindow):
     def add_empty_row(self, tableSportsmen, LOG):
         num_rows = tableSportsmen.rowCount()
         tableSportsmen.insertRow(num_rows)
-        LOG.addWidget(self.add_log_entry(f"Добавлена пустая строка", QColor(Qt.black)))
+        self.add_log_entry(f"Добавлена пустая строка", QColor(Qt.black), LOG)
 
     # Удалить выделенною строку
     def delete_row(self, tableSportsmen, LOG):
         selected_row = tableSportsmen.currentRow()
         if selected_row >= 0:
             tableSportsmen.removeRow(selected_row)
-        LOG.addWidget(self.add_log_entry(f"Удалена строка {selected_row}", QColor(Qt.black)))
+        self.add_log_entry(f"Удалена строка {selected_row+1}", QColor(Qt.black), LOG)
 
     # Открыть окно помощи "О программе"
     def helpWindow(self):
