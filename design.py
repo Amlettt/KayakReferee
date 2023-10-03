@@ -63,7 +63,7 @@ class Ui_MainWindow(object):
         self.tabLog.setObjectName(u"tabLog")
         self.textEditLog = QTextEdit(self.tabLog)
         self.textEditLog.setObjectName(u"textEditLog")
-        self.textEditLog.setGeometry(QRect(0, 0, 1001, 631))
+        self.textEditLog.setGeometry(QRect(-1, -1, 1001, 631))
         self.textEditLog.setReadOnly(True)
         self.tabWidget.addTab(self.tabLog, "")
         MainWindow.setCentralWidget(self.centralwidget)
