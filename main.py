@@ -30,6 +30,7 @@ class MainWindow(QMainWindow):
 
         # table sportsmen
         tableSportsmen = self.ui.tableSportsmen
+        tableResult = self.ui.tableResult
         LOG = self.ui.textEditLog
 
         # Menu options
@@ -52,7 +53,7 @@ class MainWindow(QMainWindow):
         actionSave.triggered.connect(self.save_file)
         actionSaveAs.triggered.connect(self.save_as_file)
         actionAdd.triggered.connect(partial(self.add_empty_row, tableSportsmen, LOG)) # Используем functools.partial для передачи аргумента в функцию
-        actionDel.triggered.connect(partial(self.delete_row, tableSportsmen, LOG)) # Используем functools.partial для передачи аргумента в функцию
+        actionDel.triggered.connect(partial(self.delete_row, tableSportsmen, tableResult, LOG)) # Используем functools.partial для передачи аргумента в функцию
 
         actionCheckPoint.triggered.connect(self.helpWindow)
         actionFinish.triggered.connect(self.helpWindow)
@@ -137,15 +138,23 @@ class MainWindow(QMainWindow):
     # Добавить новую строку
     def add_empty_row(self, tableSportsmen, LOG):
         num_rows = tableSportsmen.rowCount()
-        tableSportsmen.insertRow(num_rows)
-        self.add_log_entry(f"Добавлена пустая строка", QColor(Qt.black), LOG)
+        current_tab = self.ui.tabWidget.currentIndex()
+        if num_rows > 0 and current_tab == 0:
+            tableSportsmen.insertRow(num_rows)
+            self.add_log_entry(f"Добавлена в список участников пустая строка", QColor(Qt.black), LOG)
 
     # Удалить выделенною строку
-    def delete_row(self, tableSportsmen, LOG):
-        selected_row = tableSportsmen.currentRow()
-        if selected_row >= 0:
-            tableSportsmen.removeRow(selected_row)
-        self.add_log_entry(f"Удалена строка {selected_row+1}", QColor(Qt.black), LOG)
+    def delete_row(self, tableSportsmen, tableResult, LOG):
+        selected_row_tableSportsmen = tableSportsmen.currentRow()
+        selected_row_tableResult = tableResult.currentRow()
+        current_tab = self.ui.tabWidget.currentIndex()
+        if selected_row_tableSportsmen >= 0 and current_tab == 0:
+            tableSportsmen.removeRow(selected_row_tableSportsmen)
+            self.add_log_entry(f"Удален из списка участника спортсмен на строке  {selected_row_tableSportsmen + 1}", QColor(Qt.black), LOG)
+        if selected_row_tableResult >= 0 and current_tab == 2:
+            tableSportsmen.removeRow(selected_row_tableResult)
+            self.add_log_entry(f"Удалена результат спортсмена на строчке {selected_row_tableResult + 1}", QColor(Qt.black), LOG)
+
 
     # Открыть окно помощи "О программе"
     def helpWindow(self):
