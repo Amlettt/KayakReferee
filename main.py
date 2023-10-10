@@ -38,6 +38,8 @@ class MainWindow(QMainWindow):
         actionOpen = self.ui.actionOpen
         actionSave = self.ui.actionSave
         actionSaveAs = self.ui.actionSaveAs
+        actionImport = self.ui.actionImport
+        actionExport = self.ui.actionExport
         actionAdd = self.ui.actionAdd
         actionDel = self.ui.actionDel
         actionCheckPoint = self.ui.actionCheckPoint
@@ -52,6 +54,9 @@ class MainWindow(QMainWindow):
         actionOpen.triggered.connect(partial(self.open_file, tableSportsmen, LOG)) # Используем functools.partial для передачи аргумента в функцию
         actionSave.triggered.connect(self.save_file)
         actionSaveAs.triggered.connect(self.save_as_file)
+        actionImport.triggered.connect(partial(self.import_file, tableSportsmen, LOG)) # Используем functools.partial для передачи аргумента в функцию
+        actionExport.triggered.connect(partial(self.export_file, LOG))
+
         actionAdd.triggered.connect(partial(self.add_empty_row, tableSportsmen, LOG)) # Используем functools.partial для передачи аргумента в функцию
         actionDel.triggered.connect(partial(self.delete_row, tableSportsmen, tableResult, LOG)) # Используем functools.partial для передачи аргумента в функцию
 
@@ -84,6 +89,15 @@ class MainWindow(QMainWindow):
         pass
 
     def open_file(self, tableSportsmen, LOG):
+        pass
+
+    def save_file(self, LOG):
+        pass
+
+    def save_as_file(self, LOG):
+        pass
+
+    def import_file(self, tableSportsmen, LOG):
         options = QFileDialog.Options()
         file_name, _ = QFileDialog.getOpenFileName(self, "Открыть файл CSV", "", "CSV Files (*.csv);;All Files (*)",
                                                    options=options)
@@ -129,10 +143,8 @@ class MainWindow(QMainWindow):
                 print(f"Ошибка при чтении файла {file_name}: {str(e)}")
                 self.add_log_entry(f"Ошибка при чтении файла {file_name}: {str(e)}", QColor(Qt.red), LOG)
 
-    def save_file(self, LOG):
-        pass
 
-    def save_as_file(self, LOG):
+    def export_file(self, LOG):
         pass
 
     # Добавить новую строку
@@ -141,7 +153,7 @@ class MainWindow(QMainWindow):
         current_tab = self.ui.tabWidget.currentIndex()
         if num_rows > 0 and current_tab == 0:
             tableSportsmen.insertRow(num_rows)
-            self.add_log_entry(f"Добавлена в список участников пустая строка", QColor(Qt.black), LOG)
+            self.add_log_entry(f"Добавлена в список участников пустая строка {num_rows + 1}", QColor(Qt.black), LOG)
 
     # Удалить выделенною строку
     def delete_row(self, tableSportsmen, tableResult, LOG):
@@ -150,7 +162,9 @@ class MainWindow(QMainWindow):
         current_tab = self.ui.tabWidget.currentIndex()
         if selected_row_tableSportsmen >= 0 and current_tab == 0:
             tableSportsmen.removeRow(selected_row_tableSportsmen)
-            self.add_log_entry(f"Удален из списка участника спортсмен на строке  {selected_row_tableSportsmen + 1}", QColor(Qt.black), LOG)
+            if selected_row_tableSportsmen == 0:
+                tableSportsmen.insertRow(0)
+            self.add_log_entry(f"Удален из списка участника спортсмен на строке {selected_row_tableSportsmen + 1}", QColor(Qt.black), LOG)
         if selected_row_tableResult >= 0 and current_tab == 2:
             tableSportsmen.removeRow(selected_row_tableResult)
             self.add_log_entry(f"Удалена результат спортсмена на строчке {selected_row_tableResult + 1}", QColor(Qt.black), LOG)
