@@ -54,7 +54,7 @@ class MainWindow(QMainWindow):
         actionOpen.triggered.connect(partial(self.open_file, tableSportsmen, LOG)) # Используем functools.partial для передачи аргумента в функцию
         actionSave.triggered.connect(self.save_file)
         actionSaveAs.triggered.connect(self.save_as_file)
-        actionImport.triggered.connect(partial(self.import_file, tableSportsmen, LOG)) # Используем functools.partial для передачи аргумента в функцию
+        actionImport.triggered.connect(self.import_file) # Используем functools.partial для передачи аргумента в функцию
         actionExport.triggered.connect(partial(self.export_file, LOG))
 
         actionAdd.triggered.connect(partial(self.add_empty_row, tableSportsmen, LOG)) # Используем functools.partial для передачи аргумента в функцию
@@ -84,6 +84,34 @@ class MainWindow(QMainWindow):
         # Переходим на новую строку
         cursor.insertBlock()
 
+    def create_table(self, file_name, table_name, df):
+        # Устанавливаем количество строк и столбцов в таблице
+
+        table_name.setRowCount(df.shape[0])
+        table_name.setColumnCount(df.shape[1])
+        # Задаем заголовки таблицы
+        table_name.setHorizontalHeaderLabels(list(df.columns))
+        # Заполняем таблицу данными из JSON
+
+        # Устанавливаем стили для заголовков
+        header_font = QFont()
+        header_font.setBold(True)
+        table_name.horizontalHeader().setFont(header_font)
+        table_name.verticalHeader().setFont(header_font)
+        # установка цвета заголовка
+        stylesheet = "::section{Background-color: rgb(199, 199, 199);}"
+        table_name.horizontalHeader().setStyleSheet(stylesheet)
+
+        for i in range(df.shape[0]):
+            for j in range(df.shape[1]):
+                item = QTableWidgetItem(str(df.iloc[i, j]))
+                table_name.setItem(i, j, item)
+
+        # Настройка размеров столбцов по содержимому
+        table_name.resizeColumnsToContents()
+        # Добавляем LOG
+        self.add_log_entry(f"Открытие файла {file_name}", QColor(Qt.black), self.ui.textEditLog)
+
 
     def new_file(self, tableSportsmen, LOG):
         pass
@@ -97,7 +125,7 @@ class MainWindow(QMainWindow):
     def save_as_file(self, LOG):
         pass
 
-    def import_file(self, tableSportsmen, LOG):
+    def import_file(self):
         options = QFileDialog.Options()
         file_name, _ = QFileDialog.getOpenFileName(self, "Открыть файл CSV", "", "CSV Files (*.csv);;All Files (*)",
                                                    options=options)
@@ -108,33 +136,8 @@ class MainWindow(QMainWindow):
                 # Теперь у вас есть DataFrame `df`, который содержит данные из CSV файла
                 # Вы можете выполнять операции с данными с использованием Pandas
 
-                # Устанавливаем количество строк и столбцов в таблице
-
-                tableSportsmen.setRowCount(df.shape[0])
-                tableSportsmen.setColumnCount(df.shape[1])
-                # Задаем заголовки таблицы
-                tableSportsmen.setHorizontalHeaderLabels(list(df.columns))
-                # Заполняем таблицу данными из JSON
-
-                # Устанавливаем стили для заголовков
-                header_font = QFont()
-                header_font.setBold(True)
-                tableSportsmen.horizontalHeader().setFont(header_font)
-                tableSportsmen.verticalHeader().setFont(header_font)
-                # установка цвета заголовка
-                # header_color = QColor(192, 192, 192)  # Серый цвет (RGB)
-                # tableSportsmen.horizontalHeader().setStyleSheet(f"background-color: {header_color.name()};")
-
-                for i in range(df.shape[0]):
-                    for j in range(df.shape[1]):
-                        item = QTableWidgetItem(str(df.iloc[i, j]))
-                        tableSportsmen.setItem(i, j, item)
-
-                # Настройка размеров столбцов по содержимому
-                tableSportsmen.resizeColumnsToContents()
-                # Добавляем LOG
-                self.add_log_entry(f"Открытие файла {file_name}", QColor(Qt.black), LOG)
-
+                self.create_table(file_name, self.ui.tableSportsmen, df)
+                self.create_table(file_name, self.ui.tableResult, df)
 
             except Exception as e:
                 QMessageBox.about(self, "Ошибка",
